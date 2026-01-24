@@ -125,8 +125,8 @@ def parse_args():
     parser.add_argument(
         "--batch_size",
         type=int,
-        default=4,
-        help="Rollout batch size",
+        default=2,
+        help="Rollout batch size (paper Section 4.3 uses 2)",
     )
     parser.add_argument(
         "--mini_batch_size",
@@ -143,8 +143,8 @@ def parse_args():
     parser.add_argument(
         "--learning_rate",
         type=float,
-        default=1e-5,
-        help="Learning rate",
+        default=1e-6,
+        help="Learning rate (paper Section 4.3 uses 1e-6)",
     )
     parser.add_argument(
         "--clip_range",
@@ -213,6 +213,14 @@ def parse_args():
         type=str,
         default="cuda",
         help="Device to use (cuda/cpu)",
+    )
+
+    # Reward variant
+    parser.add_argument(
+        "--binary_reward",
+        action="store_true",
+        help="Use binary functional reward (Rfunc = 1.0 iff all tests pass, else 0.0). "
+             "Paper Section 4.2 PPO-simple variant. Default is partial credit (Table 1).",
     )
 
     # Proposal alignment enhancements
@@ -352,6 +360,7 @@ def main():
         alpha=args.alpha,
         beta=args.beta,
         rsec_formula=args.rsec_formula,
+        binary_reward=args.binary_reward,
     )
 
     ppo_config = PPOConfig(
@@ -405,6 +414,7 @@ def main():
     print(f"  Prompts: {len(prompts)}")
     print(f"  Episodes: {args.episodes}")
     print(f"  Reward weights: α={args.alpha}, β={args.beta}")
+    print(f"  Reward mode: {'binary (PPO-simple)' if args.binary_reward else 'partial credit (Table 1)'}")
     print(f"  Rsec formula: {args.rsec_formula}")
     print(f"  Batch size: {args.batch_size}")
     print(f"  PPO epochs: {args.ppo_epochs}")

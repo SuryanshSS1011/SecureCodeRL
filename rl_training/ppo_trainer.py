@@ -555,15 +555,18 @@ class ToolFeedbackCollector:
                     # Exponential decay based on findings
                     rsec = max(0.0, 1.0 - (0.2 * num_findings))
 
-            # Compute functional reward with PARTIAL CREDIT
-            # If test cases provided, run them for true Rfunc with partial credit
-            # Otherwise, use syntax validity as fallback (can't evaluate without tests)
+            # Compute functional reward.
+            # binary_reward (paper PPO-simple): Rfunc = 1.0 iff all tests pass, else 0.0.
+            # default (paper PPO-fresh / PPO-cont): partial credit per Table 1.
+            binary = getattr(self.reward_calculator.config, 'binary_reward', False)
             if syntax_valid and test_cases and test_cases.get('inputs'):
-                # Partial credit system: 0.2 (syntax) + 0.2 (runs) + 0.2 (output) + 0.4*(pass rate)
-                rfunc = self._run_tests_for_rfunc(code_file, test_cases)
+                if binary:
+                    rfunc = self._run_tests_binary(code_file, test_cases)
+                else:
+                    rfunc = self._run_tests_for_rfunc(code_file, test_cases)
             else:
-                # Fallback when no tests available: syntax valid = 1.0, invalid = 0.0
-                # (Can't apply partial credit without tests to run)
+                # No tests available. Binary mode cannot tell pass from fail; fall
+                # back to a syntax-only signal in both modes.
                 rfunc = 1.0 if syntax_valid else 0.0
 
             # Combined reward
@@ -704,6 +707,36 @@ class ToolFeedbackCollector:
         score += 0.4 * (passed / num_tests)
 
         return min(score, 1.0)
+
+    def _run_tests_binary(self, code_file: str, test_cases: Dict) -> float:
+        """Binary functional reward: 1.0 iff all tests pass, else 0.0.
+
+        Paper Section 4.2 PPO-simple variant.
+        """
+        import subprocess
+
+        inputs = test_cases.get('inputs', [])
+        outputs = test_cases.get('outputs', [])
+        num_tests = min(len(inputs), len(outputs))
+        if num_tests == 0:
+            return 0.0
+
+        for i in range(num_tests):
+            try:
+                result = subprocess.run(
+                    ['python', code_file],
+                    input=inputs[i],
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                )
+                if result.returncode != 0:
+                    return 0.0
+                if result.stdout.strip() != outputs[i].strip():
+                    return 0.0
+            except (subprocess.TimeoutExpired, Exception):
+                return 0.0
+        return 1.0
 
     def _run_tests(self, code_file: str, test_cases: Dict) -> Dict:
         """Run test cases against Python code (legacy interface)"""

@@ -29,6 +29,11 @@ class RewardConfig:
     # Compilation failure penalty (Rfunc = 0 if code doesn't compile)
     compilation_failure_rfunc: float = 0.0
 
+    # Binary functional reward: Rfunc = 1.0 iff all tests pass, else 0.0.
+    # Paper Section 4.2 PPO-simple variant. Default is partial-credit (paper
+    # Table 1, the contribution this WIP centers on).
+    binary_reward: bool = False
+
     def __post_init__(self):
         assert abs(self.alpha + self.beta - 1.0) < 1e-6, "α + β must equal 1"
         assert 0 <= self.alpha <= 1, "α must be in [0, 1]"
@@ -39,11 +44,11 @@ class RewardConfig:
 class PPOConfig:
     """Configuration for Proximal Policy Optimization"""
 
-    # Learning rate
-    learning_rate: float = 1e-5
+    # Learning rate (paper Section 4.3)
+    learning_rate: float = 1e-6
 
-    # Batch sizes
-    batch_size: int = 4
+    # Batch sizes (paper Section 4.3 uses batch 2)
+    batch_size: int = 2
     mini_batch_size: int = 2
     gradient_accumulation_steps: int = 4
 
@@ -181,9 +186,9 @@ class RLConfig:
     lora_r: int = 16
     lora_alpha: int = 32
 
-    # PPO
-    learning_rate: float = 1e-5
-    batch_size: int = 4
+    # PPO (paper Section 4.3)
+    learning_rate: float = 1e-6
+    batch_size: int = 2
     ppo_epochs: int = 4
     clip_range: float = 0.2
 
