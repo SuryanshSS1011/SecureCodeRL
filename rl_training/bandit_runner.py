@@ -249,29 +249,34 @@ class BanditRunner:
 
         return findings
 
+    # Paper Section 3.1: V = sum of per-finding severity, HIGH=1.0, MEDIUM=0.5,
+    # LOW excluded by the Bandit `-ll` invocation in _run_bandit. Capped at 1.0
+    # so V stays in [0, 1] for the R_sec = exp(-V) formula in Equation (2).
+    PAPER_SEVERITY_WEIGHTS = {
+        'HIGH': 1.0,
+        'MEDIUM': 0.5,
+        # LOW is excluded at the Bandit level (-ll); included here as 0.0 for
+        # safety in case a regex-fallback finding sneaks through.
+        'LOW': 0.0,
+    }
+
     def compute_severity(
         self,
         findings: List[BanditFinding],
-        max_severity: float = 5.0
+        max_severity: float = 1.0,  # kept for backward-compat; ignored
     ) -> float:
-        """
-        Compute normalized severity score V from findings.
-
-        V = sum(wi) / max_severity, capped at 1.0
-
-        Args:
-            findings: List of BanditFinding objects
-            max_severity: Maximum severity for normalization
-
-        Returns:
-            Normalized severity V in [0, 1]
+        """Compute V per paper Equation (2): per-finding HIGH=1.0, MEDIUM=0.5,
+        summed and capped at 1.0. ``max_severity`` is retained as a kwarg for
+        backward-compatibility but is no longer used (the cap is fixed at 1.0).
         """
         if not findings:
             return 0.0
 
-        total_weight = sum(f.weight for f in findings)
-        normalized = total_weight / max_severity
-        return min(normalized, 1.0)
+        total = sum(
+            self.PAPER_SEVERITY_WEIGHTS.get(f.severity.upper(), 0.5)
+            for f in findings
+        )
+        return min(total, 1.0)
 
     def compute_rsec(
         self,
