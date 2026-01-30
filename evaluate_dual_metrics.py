@@ -428,7 +428,7 @@ def main():
     parser.add_argument("--checkpoint", type=str, help="Single checkpoint to evaluate")
     parser.add_argument("--checkpoints", nargs="+", help="Multiple checkpoints to compare")
     parser.add_argument("--prompts_file", type=str, required=True, help="Prompts JSON file")
-    parser.add_argument("--num_samples", type=int, default=50, help="Number of samples to evaluate")
+    parser.add_argument("--num_samples", type=int, default=100, help="Number of samples to evaluate (paper Section 4.3 uses 100)")
     parser.add_argument("--output_dir", type=str, default="results/dual_metrics", help="Output directory")
     parser.add_argument("--model_path", type=str, default="deepseek-ai/deepseek-coder-1.3b-instruct")
     parser.add_argument("--alpha", type=float, default=0.6, help="Weight for Rfunc")
