@@ -1,199 +1,182 @@
-# SecureCodeRL: Reinforcement Learning for Secure Code Generation
+# SecureCodeRL
 
-A reinforcement learning framework that trains LLMs to generate code that is both **functionally correct** AND **secure**.
+**Partial-credit RL for reliable code generation with small language models**
 
-## The Problem
+LCTES '26 (WIP)
 
-LLMs generate code that has two critical issues:
-1. **Functional errors** - Code doesn't work correctly (wrong output, crashes)
-2. **Security vulnerabilities** - Code contains dangerous patterns (eval, exec, command injection)
+This repository contains the source code, training pipeline, and evaluation
+scripts that accompany the LCTES '26 WIP submission. The submission PDF is at
+[`paper/lctes26-paper.pdf`](paper/lctes26-paper.pdf) and is the source of truth
+for every claim in this README. The system name `SecureCodeRL` matches the
+prior preprint (arXiv:2501.01184); the LCTES submission reframes the headline
+metric from security to reliability given the null Bandit findings on APPS+.
 
-Existing approaches optimize for one OR the other, but not both simultaneously.
+## Abstract
 
-## Our Solution
+Small language models (≤1.5B parameters) are attractive for embedded and
+resource-limited code generation because they can run under single-GPU or CPU
+budgets and be adapted without distributed training, but they are brittle under
+strict sandboxed evaluation, and reinforcement learning with binary test
+rewards is too sparse to train them reliably. This WIP paper presents a
+reliability-first RL framework with a partial-credit functional reward that
+distinguishes common near-miss outcomes (syntax error, crash, missing output,
+partial test success) and assigns intermediate credit for each. A
+static-analysis term in the objective discourages unsafe shortcuts during
+training. On DeepSeek-Coder-1.3B evaluated on 100 stdin-style APPS+ prompts,
+partial-credit PPO improves syntax validity to 63% and produces solutions that
+pass at least one test in 9% of prompts, while binary-reward PPO regresses
+below the supervised fine-tuning baseline. A binary-to-partial-credit
+curriculum outperforms training with partial credit from scratch.
 
-**Combined Reward Signal:**
+## Citation
+
+```bibtex
+@inproceedings{sijwali2026partialcredit,
+  title     = {Partial-Credit RL for Reliable Code Generation with Small Language Models (WIP)},
+  author    = {Sijwali, Suryansh Singh and Saha, Suman},
+  booktitle = {Proceedings of the 27th ACM SIGPLAN/SIGBED International Conference on Languages, Compilers, and Tools for Embedded Systems (LCTES '26)},
+  year      = {2026},
+  publisher = {ACM},
+  address   = {Boulder, Colorado, United States},
+  doi       = {10.1145/xxxxxxx.xxxxxxx},
+  note      = {Work in progress. TODO: fill DOI and pages after camera-ready.}
+}
 ```
-R = 0.6 × Rfunc + 0.4 × Rsec
+
+## Method
+
+The policy `π_θ` generates a program `y` for prompt `x` and is trained with
+PPO against a scalar reward
+
+```
+R(y) = α · R_func(y) + β · R_sec(y),   α = 0.6, β = 0.4
 ```
 
-Where:
-- **Rfunc** = Functional correctness (test pass rate)
-- **Rsec** = Security score (absence of vulnerabilities via Bandit analysis)
+### Partial-credit functional reward (paper Table 1)
 
-## Key Innovation: Partial Credit System
+| Stage | Condition                       | R_func           |
+|-------|---------------------------------|------------------|
+| 0     | Syntax error / not parseable    | 0.0              |
+| 1     | Valid syntax                    | 0.2              |
+| 2     | Executes without crash          | 0.4              |
+| 3     | Produces any stdout             | 0.6              |
+| 4     | Passes k of T tests             | 0.6 + 0.4 · k/T  |
 
-Traditional RL for code uses binary rewards (pass/fail), creating a **sparse reward problem** - the model gets no learning signal when tests fail.
+T is the total number of test cases for the prompt; k is the number passed.
 
-We introduced **graduated rewards**:
+### Security term
 
-| Stage | Condition | Score |
-|-------|-----------|-------|
-| 0 | Syntax error | 0.0 |
-| 1 | Valid syntax | 0.2 |
-| 2 | Runs without error | 0.4 |
-| 3 | Produces output | 0.6 |
-| 4 | Tests pass | 1.0 |
+```
+R_sec = exp(-V),   V ∈ [0, 1]
+```
 
-This provides continuous learning gradient, allowing the model to improve incrementally.
+V is a normalized severity score over Bandit findings. We run Bandit at the
+`-ll` (medium-and-up) level, so LOW findings are excluded; benign `input()`
+usage required by the APPS+ stdin format would otherwise dominate. HIGH
+findings contribute 1.0 to V and MEDIUM findings 0.5. Clean code yields
+`R_sec = 1.0`.
+
+### KL regularization
+
+PPO uses a KL penalty `λ = 0.1` against the SFT reference to discourage reward
+hacking.
 
 ## Results
 
-| Model | Syntax Valid | Test Pass | Security |
-|-------|-------------|-----------|----------|
-| SFT Baseline | 45% | 0% | 100% |
-| PPO-simple (binary rewards) | 15% | 0% | 100% |
-| PPO-fresh (partial credit) | 25% | 0% | 100% |
-| **PPO-continue (partial credit)** | **60%** | **5%** | **100%** |
+Evaluation on 100 stdin-style APPS+ prompts (about 85 truly held-out after
+removing training overlap). Reproduces paper Table 3.
 
-**Key achievements:**
-- **+33% syntax improvement** over SFT baseline (45% → 60%)
-- **Only model with non-zero test pass rate** (5%)
-- **100% security compliance maintained**
-- **Continuing from PPO-simple outperforms training fresh**
+| Model                | Syn.% | ≥1-P% | All-P% | mean R |
+|----------------------|------:|------:|-------:|-------:|
+| SFT Baseline         |  44.0 |   3.0 |    1.0 |   0.40 |
+| PPO-simple (binary)  |  18.0 |   0.0 |    0.0 |   0.38 |
+| PPO-fresh (partial)  |  27.0 |   2.0 |    0.0 |   0.40 |
+| PPO-cont. (partial)  |  63.0 |   9.0 |    2.0 |   0.42 |
 
-## Project Phases
+Bootstrap CIs: ±10% on Syn.%, ±6% on ≥1-P%. PPO-simple and PPO-fresh are
+statistically indistinguishable on syntax validity. The near-uniform mean R
+reflects `R_sec = 1.0` for all variants — Bandit found no MEDIUM/HIGH issues
+across 400 samples (100 prompts × 4 variants), as APPS+ algorithmic prompts
+rarely produce vulnerability-relevant code.
 
-### Phase 1: Multi-LLM Benchmark
-Evaluated multiple code generation models on APPS+ dataset:
-- DeepSeek-Coder (1.3B, 6.7B)
-- CodeLlama (7B)
-- StarCoder2 (7B)
+## Reproduction quick-start
 
-Found: Even best models have 91%+ semantic error rates and 3-5% security issues.
-
-### Phase 2: Error Analysis
-Categorized errors into:
-- **Compilation errors** - Syntax issues
-- **Semantic errors** - Logic bugs, wrong output
-- **Security vulnerabilities** - Dangerous patterns
-
-Discovered the **"missing print" bug**: Models generate `(n*2)` instead of `print(n*2)`.
-
-### Phase 3: SFT Training
-- **Model:** DeepSeek-Coder-1.3B-Instruct
-- **Method:** LoRA (r=16, alpha=32)
-- **Data:** APPS+ dataset (3,588 stdin-style problems)
-- **Params:** 6.3M trainable / 1.35B total (0.47%)
-
-### Phase 4: PPO Training
-- **Algorithm:** Proximal Policy Optimization
-- **Reward:** R = 0.6×Rfunc + 0.4×Rsec
-- **Security:** Bandit static analysis
-- **Episodes:** 100-500
-
-### Phase 5: Partial Credit Fix
-Implemented graduated rewards to solve sparse reward problem. Result: Model now learns incrementally.
-
-## Architecture
-
-| Component | Tool | Purpose |
-|-----------|------|---------|
-| Security Analysis | Bandit | Python static security scanner |
-| Functional Testing | Test Execution | stdin/stdout test cases |
-| Syntax Checking | AST Parse | Python syntax validation |
-| Training | PPO + LoRA | Parameter-efficient RL |
-
-## Quick Start
-
-### 1. Install Dependencies
 ```bash
-pip install torch transformers peft datasets accelerate bandit
-```
+# 1. install dependencies (see requirements.txt)
+pip install -r requirements.txt
 
-### 2. Run SFT Training
-```bash
+# 2. prepare the APPS+ stdin training data with up to 5 test cases per problem
+python prepare_ppo_data.py --output data/prompts/ppo_prompts_with_tests.json
+
+# 3. SFT warm-start on the stdin subset (3 epochs, LoRA r=16 α=32, cross-entropy)
 python train_sft_stdin.py
-```
 
-### 3. Run PPO Training
-```bash
+# 4. PPO with partial-credit reward (500 episodes, batch 2, lr 1e-6, KL λ=0.1, T=0.7)
 python train_ppo.py \
     --sft_checkpoint ./checkpoints/sft_stdin/best \
-    --prompts_file ./data/prompts/ppo_prompts.json \
+    --prompts_file data/prompts/ppo_prompts_with_tests.json \
     --use_bandit \
-    --episodes 100
+    --episodes 500 \
+    --batch_size 2 \
+    --learning_rate 1e-6
 ```
 
-### 4. Evaluate Model
-```bash
-python evaluate_dual_metrics.py \
-    --checkpoints ./checkpoints/sft_stdin/best \
-    --prompts_file ./data/prompts/ppo_prompts.json \
-    --num_samples 50
-```
+For the three-variant table (PPO-simple, PPO-fresh, PPO-continue) the same
+PPO command is invoked three times: with `--binary_reward` and SFT init for
+PPO-simple; with no `--binary_reward` and SFT init for PPO-fresh; with no
+`--binary_reward` and `--ppo_checkpoint <PPO-simple-best> --resume` for
+PPO-continue. `run_both_experiments.sh` orchestrates the full sweep.
 
-## Project Structure
+## Hardware
+
+NVIDIA V100 16 GB, single GPU.
+
+## Project structure
 
 ```
-SecureCodeRL/
-├── train_sft_stdin.py        # SFT training script
-├── train_ppo.py              # PPO training script
-├── evaluate_dual_metrics.py  # Model evaluation
-├── prepare_ppo_data.py       # Data preparation
-├── run_both_experiments.sh   # Full experiment pipeline
-│
-├── rl_training/              # Core RL modules
-│   ├── ppo_trainer.py        # PPO with partial credit
-│   ├── reward_calculator.py  # R = α×Rfunc + β×Rsec
-│   ├── bandit_runner.py      # Security analysis
-│   ├── scoring_agent.py      # Code evaluation
-│   └── sft_trainer.py        # SFT training
-│
+.
+├── README.md
+├── LICENSE
+├── CITATION.cff
+├── requirements.txt
+├── benchmark/                  # multi-LLM zero-shot baseline (paper Table 2)
 ├── data/
-│   └── prompts/              # Training prompts
-│
-├── paper/                    # LaTeX paper
-│   ├── main.tex              # IEEE format paper
-│   └── figures/              # TikZ figures
-│
-├── benchmark/                # Multi-LLM benchmark system
-│
-├── reports/
-│   └── paper_draft.md        # Research paper draft
-│
-└── results_from_vm/          # Experiment results
+│   ├── full_dataset_ids.json
+│   ├── stdin_subset_ids.json
+│   ├── function_call_subset_ids.json
+│   ├── prompts/                # PPO prompts + test cases (regenerated by prepare_ppo_data.py)
+│   └── sft/                    # SFT train/val JSONL (regenerated)
+├── evaluate_dual_metrics.py    # 100-prompt eval (Syn., ≥1-P, All-P, R)
+├── experiment_results/         # smaller pilot runs (20-sample)
+├── paper/
+│   ├── lctes26-paper.pdf       # submission PDF (source of truth)
+│   ├── figures/
+│   └── README.md
+├── prepare_ppo_data.py         # APPS+ → stdin prompts with test cases
+├── rl_training/
+│   ├── ppo_trainer.py          # PPO with partial-credit reward
+│   ├── reward_calculator.py    # R = α·R_func + β·R_sec
+│   ├── bandit_runner.py        # Bandit MEDIUM/HIGH analysis (paper Eq (2))
+│   ├── scoring_agent.py        # rules-based scoring
+│   ├── security_weights.py     # CWE/CVSS severity mapping (used by C/KLEE follow-up)
+│   ├── sft_trainer.py
+│   └── config.py               # RewardConfig, PPOConfig, ModelConfig
+├── run_both_experiments.sh     # end-to-end pipeline
+├── train_ppo.py                # PPO entry point
+└── train_sft_stdin.py          # SFT entry point
 ```
 
-## Security Patterns Detected
+## Reproducing the paper
 
-The pipeline detects these Python vulnerabilities:
-- `eval()`, `exec()` - Code injection
-- `os.system()`, `subprocess(shell=True)` - Command injection
-- `pickle.load()` - Unsafe deserialization
-- `__import__()` - Dynamic imports
-- Hardcoded credentials
+The four-step quick-start above reproduces the SFT baseline and the
+partial-credit PPO row of paper Table 3. For the full three-variant sweep
+(PPO-simple, PPO-fresh, PPO-continue), invoke `run_both_experiments.sh`,
+which runs the data prep, SFT, all three PPO variants in sequence, and the
+100-prompt evaluation. Expect ~24–28 hours total wall-clock on a single
+NVIDIA V100 16 GB. Seeds are fixed at 42 across the eval and data-prep code
+paths (`evaluate_dual_metrics.py`, `rl_training/sft_trainer.py`,
+`rl_training/data_converter.py`); the LCTES experiments used the same seed.
 
-## Training Configuration
+## Acknowledgments
 
-### SFT Config
-```python
-LoraConfig(
-    r=16,
-    lora_alpha=32,
-    lora_dropout=0.1,
-    target_modules=["q_proj", "v_proj", "k_proj", "o_proj"]
-)
-```
-
-### PPO Config
-| Parameter | Value |
-|-----------|-------|
-| Learning rate | 1e-6 |
-| Batch size | 2 |
-| PPO epochs | 4 |
-| Clip range | 0.2 |
-| α (functional) | 0.6 |
-| β (security) | 0.4 |
-
-## Hardware Requirements
-
-- **GPU:** NVIDIA V100 16GB+ (or equivalent)
-- **CUDA:** 11.8+
-- **RAM:** 32GB+ recommended
-
-## Documentation
-
-- **Paper Draft:** `reports/paper_draft.md` - Research paper
-- **LaTeX Paper:** `paper/main.tex` - Final paper (IEEE format)
-
+Forked from [`Achintya-Lakshmanan/basic-rl-feedback-workflow`](https://github.com/Achintya-Lakshmanan/basic-rl-feedback-workflow), which itself forks the root upstream [`SJh29/basic-rl-feedback-workflow`](https://github.com/SJh29/basic-rl-feedback-workflow). The Python-only, partial-credit pipeline, SLM-focused experiments, and APPS+ stdin evaluation are contributions of this LCTES '26 work.
