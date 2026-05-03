@@ -1,0 +1,30 @@
+# Pinned versions are not recoverable from the repo (no lockfile committed).
+# Constraints below are minimum-version, picked to satisfy the actual imports
+# in train_sft_stdin.py, train_ppo.py, evaluate_dual_metrics.py, and the
+# rl_training/ package. Confirm before tagging the submission snapshot.
+
+# Core deep learning stack
+torch>=2.1.0
+transformers>=4.38.0
+peft>=0.7.0
+accelerate>=0.25.0
+datasets>=2.14.0
+huggingface-hub>=0.19.0
+
+# Optional: 8-bit reference model loading in rl_training/ppo_trainer.py
+bitsandbytes>=0.41.0
+
+# Trainer utilities (PPO from TRL is referenced via patterns; not strictly
+# required by current code path but commonly used in RLHF setups)
+trl>=0.7.4
+
+# Static analysis
+bandit>=1.7.5
+
+# Data processing / plots / progress
+numpy>=1.24.0
+pandas>=2.0.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+tqdm>=4.65.0
+requests>=2.31.0

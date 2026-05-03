@@ -269,10 +269,33 @@ legacy/
 # Temporary output
 output.txt
 
-# Paper and data directories (not ready for commit)
-paper/
+# Data and reports directories (legacy ignore — keep tracked files tracked
+# via the explicit re-includes at the bottom of this file).
 data/
 reports/
+
+# Paper directory: ignore LaTeX build artifacts but keep source + camera-ready PDF.
+paper/**/*.aux
+paper/**/*.log
+paper/**/*.out
+paper/**/*.bbl
+paper/**/*.blg
+paper/**/*.fls
+paper/**/*.fdb_latexmk
+paper/**/*.synctex.gz
+paper/**/*.toc
+
+# LCTES '26 camera-ready: extra ignores per Phase 5 spec
+wandb/
+*.pt
+experiment_results/raw/
+data/processed/
+
+# Out-of-scope scaffolding for follow-up work, not part of the LCTES artifact.
+experiment_outputs/
+
+# Local-only camera-ready prep notes (audit trail, never committed).
+.lctes-prep/
 
 # KLEE specific
 *.ktest

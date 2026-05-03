@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the LCTES '26 WIP paper."
+title: "Partial-Credit RL for Reliable Code Generation with Small Language Models (WIP)"
+type: software
+authors:
+  - family-names: Sijwali
+    given-names: Suryansh Singh
+  - family-names: Saha
+    given-names: Suman
+preferred-citation:
+  type: conference-paper
+  title: "Partial-Credit RL for Reliable Code Generation with Small Language Models (WIP)"
+  authors:
+    - family-names: Sijwali
+      given-names: Suryansh Singh
+    - family-names: Saha
+      given-names: Suman
+  conference:
+    name: "27th ACM SIGPLAN/SIGBED International Conference on Languages, Compilers, and Tools for Embedded Systems"
+    acronym: "LCTES '26"
+    location: "Boulder, Colorado, United States"
+  year: 2026
+  publisher:
+    name: "ACM"
+  # TODO: fill once LCTES DOI is assigned
+  doi: "10.1145/xxxxxxx.xxxxxxx"
+  # TODO: fill once LCTES DOI is assigned
+  start: 1
+  end: 4
+keywords:
+  - "Partial-Credit Reward Shaping"
+  - "Reinforcement Learning"
+  - "PPO"
+  - "Small Language Models"
+  - "Code Generation"
+license: MIT
+repository-code: "https://github.com/SuryanshSS1011/SecureCodeRL"

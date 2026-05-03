@@ -39,7 +39,7 @@ curriculum outperforms training with partial credit from scratch.
   publisher = {ACM},
   address   = {Boulder, Colorado, United States},
   doi       = {10.1145/xxxxxxx.xxxxxxx},
-  note      = {Work in progress. TODO: fill DOI and pages after camera-ready.}
+  note      = {Work in progress. TODO: fill DOI and pages once LCTES DOI is assigned.}
 }
 ```
 
