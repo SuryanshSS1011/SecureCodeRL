@@ -30,6 +30,8 @@ curriculum outperforms training with partial credit from scratch.
 
 ## Citation
 
+If you use this work, cite the paper:
+
 ```bibtex
 @inproceedings{sijwali2026partialcredit,
   title     = {Partial-Credit RL for Reliable Code Generation with Small Language Models (WIP)},
@@ -39,7 +41,21 @@ curriculum outperforms training with partial credit from scratch.
   publisher = {ACM},
   address   = {Boulder, Colorado, United States},
   doi       = {10.1145/xxxxxxx.xxxxxxx},
-  note      = {Work in progress. TODO: fill DOI and pages once LCTES DOI is assigned.}
+  note      = {Work in progress. TODO: fill paper DOI and pages once ACM assigns them.}
+}
+```
+
+To cite this software artifact specifically (Zenodo deposit):
+
+```bibtex
+@software{sijwali2026securecoderl,
+  title     = {SecureCodeRL: Partial-Credit RL for Reliable Code Generation with Small Language Models (LCTES '26 artifact)},
+  author    = {Sijwali, Suryansh Singh and Saha, Suman},
+  year      = {2026},
+  publisher = {Zenodo},
+  version   = {v0.1-lctes},
+  doi       = {10.5281/zenodo.19999642},
+  url       = {https://doi.org/10.5281/zenodo.19999642}
 }
 ```
 

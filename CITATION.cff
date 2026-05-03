@@ -2,6 +2,9 @@ cff-version: 1.2.0
 message: "If you use this software, please cite the LCTES '26 WIP paper."
 title: "Partial-Credit RL for Reliable Code Generation with Small Language Models (WIP)"
 type: software
+version: "v0.1-lctes"
+date-released: "2026-05-03"
+doi: "10.5281/zenodo.19999642"
 authors:
   - family-names: Sijwali
     given-names: Suryansh Singh
