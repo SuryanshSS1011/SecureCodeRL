@@ -21,7 +21,7 @@ class RewardConfig:
     beta: float = 0.4   # Weight for security reward
 
     # Security reward formula: 'exp' for exp(-V), 'linear' for 1 - min(V, 1)
-    rsec_formula: Literal['exp', 'linear'] = 'exp'
+    rsec_formula: Literal['exp', 'linear'] = 'linear'
 
     # KLEE bug severity weight (included in V calculation)
     klee_bug_weight: float = 0.8
@@ -177,7 +177,7 @@ class RLConfig:
     # Reward weights
     alpha: float = 0.6
     beta: float = 0.4
-    rsec_formula: Literal['exp', 'linear'] = 'exp'
+    rsec_formula: Literal['exp', 'linear'] = 'linear'
     klee_bug_weight: float = 0.8
 
     # Model

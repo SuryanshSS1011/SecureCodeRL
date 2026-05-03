@@ -251,7 +251,8 @@ class BanditRunner:
 
     # Paper Section 3.1: V = sum of per-finding severity, HIGH=1.0, MEDIUM=0.5,
     # LOW excluded by the Bandit `-ll` invocation in _run_bandit. Capped at 1.0
-    # so V stays in [0, 1] for the R_sec = exp(-V) formula in Equation (2).
+    # so V stays in [0, 1] for the R_sec formula in Equation (2)
+    # (R_sec = 1 - V; the earlier exp(-V) form remains available for ablation).
     PAPER_SEVERITY_WEIGHTS = {
         'HIGH': 1.0,
         'MEDIUM': 0.5,
@@ -281,7 +282,7 @@ class BanditRunner:
     def compute_rsec(
         self,
         findings: List[BanditFinding],
-        formula: str = 'exp'
+        formula: str = 'linear'
     ) -> float:
         """
         Compute Rsec (security reward) from findings.

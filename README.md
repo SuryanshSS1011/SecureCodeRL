@@ -67,14 +67,17 @@ T is the total number of test cases for the prompt; k is the number passed.
 ### Security term
 
 ```
-R_sec = exp(-V),   V ∈ [0, 1]
+R_sec = 1 − V,   V ∈ [0, 1]
 ```
 
 V is a normalized severity score over Bandit findings. We run Bandit at the
 `-ll` (medium-and-up) level, so LOW findings are excluded; benign `input()`
 usage required by the APPS+ stdin format would otherwise dominate. HIGH
 findings contribute 1.0 to V and MEDIUM findings 0.5. Clean code yields
-`R_sec = 1.0`.
+`R_sec = 1.0`. The linear form keeps `R_sec` in `[0, 1]` so it shares a range
+with `R_func` (the earlier `exp(-V)` form was bounded below at `e^-1 ≈ 0.37`,
+which a reviewer flagged as range-mismatched). The empirical impact on the
+reported numbers is nil since `V = 0` across all 400 evaluation samples.
 
 ### KL regularization
 
@@ -83,8 +86,16 @@ hacking.
 
 ## Results
 
-Evaluation on 100 stdin-style APPS+ prompts (about 85 truly held-out after
-removing training overlap). Reproduces paper Table 3.
+### Train/eval split
+
+Training draws prompts from the 7,408-problem stdin-style APPS+ corpus. PPO
+runs for 500 episodes at batch 2, covering about 1,000 unique prompts. The
+evaluation set is 100 prompts sampled from the same corpus under
+`seed=42`. Expected overlap between training and evaluation is about 15
+prompts, leaving roughly 85 truly held out. The eval set is fixed by the
+seed; reruns under the same seed pick the same 100 prompts.
+
+### Headline numbers (paper Table 3)
 
 | Model                | Syn.% | ≥1-P% | All-P% | mean R |
 |----------------------|------:|------:|-------:|-------:|
@@ -153,7 +164,7 @@ NVIDIA V100 16 GB, single GPU.
 ├── LICENSE
 ├── CITATION.cff
 ├── requirements.txt
-├── benchmark/                  # multi-LLM zero-shot baseline (paper Table 2)
+├── benchmark/                  # multi-LLM baseline at single sample, no in-context examples (paper Table 2)
 ├── data/
 │   ├── full_dataset_ids.json
 │   ├── stdin_subset_ids.json

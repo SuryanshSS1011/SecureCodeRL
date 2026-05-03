@@ -297,6 +297,9 @@ experiment_outputs/
 # Local-only camera-ready prep notes (audit trail, never committed).
 .lctes-prep/
 
+# scripts/minimal_example.sh work products
+.minimal_example_work/
+
 # KLEE specific
 *.ktest
 *.kquery

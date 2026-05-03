@@ -110,9 +110,10 @@ def parse_args():
     parser.add_argument(
         "--rsec_formula",
         type=str,
-        default="exp",
+        default="linear",
         choices=["exp", "linear"],
-        help="Formula for Rsec: 'exp' for exp(-V), 'linear' for 1-min(V,1)",
+        help="Formula for Rsec: 'linear' for 1-min(V,1) (default; matches paper "
+             "R_func range [0, 1]); 'exp' for exp(-V) (smooth gradient, range [e^-1, 1]).",
     )
 
     # PPO hyperparameters
