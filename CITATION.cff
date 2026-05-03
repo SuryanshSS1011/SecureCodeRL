@@ -5,16 +5,20 @@ type: software
 authors:
   - family-names: Sijwali
     given-names: Suryansh Singh
+    orcid: "https://orcid.org/0009-0005-7739-1657"
   - family-names: Saha
     given-names: Suman
+    orcid: "https://orcid.org/0009-0005-9440-6785"
 preferred-citation:
   type: conference-paper
   title: "Partial-Credit RL for Reliable Code Generation with Small Language Models (WIP)"
   authors:
     - family-names: Sijwali
       given-names: Suryansh Singh
+      orcid: "https://orcid.org/0009-0005-7739-1657"
     - family-names: Saha
       given-names: Suman
+      orcid: "https://orcid.org/0009-0005-9440-6785"
   conference:
     name: "27th ACM SIGPLAN/SIGBED International Conference on Languages, Compilers, and Tools for Embedded Systems"
     acronym: "LCTES '26"
