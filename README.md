@@ -99,6 +99,20 @@ reflects `R_sec = 1.0` for all variants — Bandit found no MEDIUM/HIGH issues
 across 400 samples (100 prompts × 4 variants), as APPS+ algorithmic prompts
 rarely produce vulnerability-relevant code.
 
+## Minimal working example
+
+To verify the pipeline runs without budgeting the full ~24h V100 reproduction,
+run
+
+```bash
+bash scripts/minimal_example.sh
+```
+
+This exercises the data prep, SFT, PPO, evaluation, and Bandit paths on a tiny
+4-prompt subset and prints `MINIMAL EXAMPLE: PASS` on success. Runtime is
+roughly 10 to 30 minutes on a V100 and roughly 30 to 90 minutes on CPU. It
+does **not** reproduce paper Table 3 numbers — see the next section for that.
+
 ## Reproduction quick-start
 
 ```bash
