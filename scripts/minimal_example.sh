@@ -31,7 +31,7 @@ stage() { echo; echo "[$(date +%H:%M:%S)] >>> $1"; }
 # Stage 1. Dependency import check.
 stage "1/6 dependency import check"
 python3 - <<'PY' || { echo "MINIMAL EXAMPLE: FAIL dependency-import"; exit 1; }
-import importlib, sys
+import importlib.util, sys
 required = ["torch", "transformers", "peft", "bandit"]
 missing = [m for m in required if importlib.util.find_spec(m) is None]
 if missing:
