@@ -1,15 +1,16 @@
 # SecureCodeRL
 
-**Partial-credit RL for reliable code generation with small language models**
+**Scheduled Partial-Credit RL for Reliable Code Generation with Small Language Models**
 
 LCTES '26 (WIP)
 
 This repository contains the source code, training pipeline, and evaluation
-scripts that accompany the LCTES '26 WIP submission. The submission PDF is at
-[`paper/lctes26-paper.pdf`](paper/lctes26-paper.pdf) and is the source of truth
-for every claim in this README. The system name `SecureCodeRL` matches the
-prior preprint (arXiv:2501.01184); the LCTES submission reframes the headline
-metric from security to reliability given the null Bandit findings on APPS+.
+scripts that accompany the LCTES '26 WIP paper. The camera-ready PDF is at
+[`paper/pldiws26lctesmain-p11-p-b372538494-176281_176283M-final.pdf`](paper/pldiws26lctesmain-p11-p-b372538494-176281_176283M-final.pdf)
+and is the source of truth for every claim in this README. The system name
+`SecureCodeRL` matches the prior preprint (arXiv:2501.01184); the LCTES paper
+reframes the headline metric from security to reliability given the null
+Bandit findings on APPS+.
 
 ## Abstract
 
@@ -34,14 +35,16 @@ If you use this work, cite the paper:
 
 ```bibtex
 @inproceedings{sijwali2026partialcredit,
-  title     = {Partial-Credit RL for Reliable Code Generation with Small Language Models (WIP)},
+  title     = {Scheduled Partial-Credit RL for Reliable Code Generation with Small Language Models (WIP)},
   author    = {Sijwali, Suryansh Singh and Saha, Suman},
   booktitle = {Proceedings of the 27th ACM SIGPLAN/SIGBED International Conference on Languages, Compilers, and Tools for Embedded Systems (LCTES '26)},
   year      = {2026},
   publisher = {ACM},
-  address   = {Boulder, Colorado, United States},
-  doi       = {10.1145/xxxxxxx.xxxxxxx},
-  note      = {Work in progress. TODO: fill paper DOI and pages once ACM assigns them.}
+  address   = {Boulder, CO, USA},
+  pages     = {1--5},
+  doi       = {10.1145/3814943.3816167},
+  isbn      = {979-8-4007-2721-4},
+  note      = {Work in progress.}
 }
 ```
 
@@ -49,7 +52,7 @@ To cite this software artifact specifically (Zenodo deposit):
 
 ```bibtex
 @software{sijwali2026securecoderl,
-  title     = {SecureCodeRL: Partial-Credit RL for Reliable Code Generation with Small Language Models (LCTES '26 artifact)},
+  title     = {SecureCodeRL: Scheduled Partial-Credit RL for Reliable Code Generation with Small Language Models (LCTES '26 artifact)},
   author    = {Sijwali, Suryansh Singh and Saha, Suman},
   year      = {2026},
   publisher = {Zenodo},
@@ -189,10 +192,7 @@ NVIDIA V100 16 GB, single GPU.
 │   └── sft/                    # SFT train/val JSONL (regenerated)
 ├── evaluate_dual_metrics.py    # 100-prompt eval (Syn., ≥1-P, All-P, R)
 ├── experiment_results/         # smaller pilot runs (20-sample)
-├── paper/
-│   ├── lctes26-paper.pdf       # submission PDF (source of truth)
-│   ├── figures/
-│   └── README.md
+├── paper/                      # camera-ready PDF (LCTES '26 final); source of truth for all claims
 ├── prepare_ppo_data.py         # APPS+ → stdin prompts with test cases
 ├── rl_training/
 │   ├── ppo_trainer.py          # PPO with partial-credit reward

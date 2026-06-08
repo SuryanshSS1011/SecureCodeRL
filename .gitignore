@@ -274,16 +274,10 @@ output.txt
 data/
 reports/
 
-# Paper directory: ignore LaTeX build artifacts but keep source + camera-ready PDF.
-paper/**/*.aux
-paper/**/*.log
-paper/**/*.out
-paper/**/*.bbl
-paper/**/*.blg
-paper/**/*.fls
-paper/**/*.fdb_latexmk
-paper/**/*.synctex.gz
-paper/**/*.toc
+# Paper directory: only the LCTES '26 final camera-ready PDF is tracked.
+paper/*
+paper/**/*
+!paper/pldiws26lctesmain-p11-p-b372538494-176281_176283M-final.pdf
 
 # LCTES '26 camera-ready: extra ignores per Phase 5 spec
 wandb/

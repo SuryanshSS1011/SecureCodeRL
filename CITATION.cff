@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite the LCTES '26 WIP paper."
-title: "Partial-Credit RL for Reliable Code Generation with Small Language Models (WIP)"
+title: "Scheduled Partial-Credit RL for Reliable Code Generation with Small Language Models (WIP)"
 type: software
 version: "v0.1-lctes"
 date-released: "2026-05-03"
@@ -14,7 +14,7 @@ authors:
     orcid: "https://orcid.org/0009-0005-9440-6785"
 preferred-citation:
   type: conference-paper
-  title: "Partial-Credit RL for Reliable Code Generation with Small Language Models (WIP)"
+  title: "Scheduled Partial-Credit RL for Reliable Code Generation with Small Language Models (WIP)"
   authors:
     - family-names: Sijwali
       given-names: Suryansh Singh
@@ -25,17 +25,18 @@ preferred-citation:
   conference:
     name: "27th ACM SIGPLAN/SIGBED International Conference on Languages, Compilers, and Tools for Embedded Systems"
     acronym: "LCTES '26"
-    location: "Boulder, Colorado, United States"
+    location: "Boulder, CO, USA"
   year: 2026
   publisher:
     name: "ACM"
-  # TODO: fill once LCTES DOI is assigned
-  doi: "10.1145/xxxxxxx.xxxxxxx"
-  # TODO: fill once LCTES DOI is assigned
+  doi: "10.1145/3814943.3816167"
+  isbn: "979-8-4007-2721-4"
   start: 1
-  end: 4
+  end: 5
 keywords:
   - "Partial-Credit Reward Shaping"
+  - "Reward Scheduling"
+  - "Curriculum Learning"
   - "Reinforcement Learning"
   - "PPO"
   - "Small Language Models"

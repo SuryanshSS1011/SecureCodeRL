@@ -1,6 +1,6 @@
 {
-  "title": "Partial-Credit RL for Reliable Code Generation with Small Language Models (WIP) — LCTES '26 artifact",
-  "description": "<p>Source code, training pipeline, and evaluation scripts for the LCTES '26 WIP paper \"Partial-Credit RL for Reliable Code Generation with Small Language Models (WIP).\" The work introduces a partial-credit functional reward that distinguishes near-miss code-generation outcomes (syntax error, crash, missing output, partial test success) and assigns intermediate credit, paired with a Bandit static-analysis security term. On DeepSeek-Coder-1.3B evaluated on 100 stdin-style APPS+ prompts, partial-credit PPO improves syntax validity to 63% and ≥1-test-pass to 9%, while binary-reward PPO regresses below the SFT baseline. A binary-to-partial-credit curriculum further outperforms training with partial credit from scratch.</p>",
+  "title": "Scheduled Partial-Credit RL for Reliable Code Generation with Small Language Models (WIP) — LCTES '26 artifact",
+  "description": "<p>Source code, training pipeline, and evaluation scripts for the LCTES '26 WIP paper \"Scheduled Partial-Credit RL for Reliable Code Generation with Small Language Models (WIP).\" The work introduces a partial-credit functional reward that distinguishes near-miss code-generation outcomes (syntax error, crash, missing output, partial test success) and assigns intermediate credit, paired with a Bandit static-analysis security term. On DeepSeek-Coder-1.3B evaluated on 100 stdin-style APPS+ prompts, partial-credit PPO improves syntax validity to 63% and ≥1-test-pass to 9%, while binary-reward PPO regresses below the SFT baseline. A binary-to-partial-credit curriculum further outperforms training with partial credit from scratch.</p>",
   "creators": [
     {
       "name": "Sijwali, Suryansh Singh",
@@ -15,6 +15,8 @@
   ],
   "keywords": [
     "Partial-Credit Reward Shaping",
+    "Reward Scheduling",
+    "Curriculum Learning",
     "Reinforcement Learning",
     "PPO",
     "Small Language Models",
@@ -28,7 +30,7 @@
   "access_right": "open",
   "related_identifiers": [
     {
-      "identifier": "10.1145/xxxxxxx.xxxxxxx",
+      "identifier": "10.1145/3814943.3816167",
       "relation": "isSupplementTo",
       "resource_type": "publication-conferencepaper",
       "scheme": "doi"
