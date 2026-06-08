@@ -56,9 +56,9 @@ To cite this software artifact specifically (Zenodo deposit):
   author    = {Sijwali, Suryansh Singh and Saha, Suman},
   year      = {2026},
   publisher = {Zenodo},
-  version   = {v0.1-lctes},
-  doi       = {10.5281/zenodo.19999642},
-  url       = {https://doi.org/10.5281/zenodo.19999642}
+  version   = {v0.1-lctes-final},
+  doi       = {10.5281/zenodo.19999641},
+  url       = {https://doi.org/10.5281/zenodo.19999641}
 }
 ```
 
