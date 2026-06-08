@@ -328,3 +328,9 @@ warnings.txt
 !Dockerfile
 !LICENSE
 !.gitignore
+
+# Re-ignore everything in paper/ except the LCTES '26 final camera-ready PDF
+# (the !*.md / !*.json un-ignores above would otherwise re-include paper/README.md, etc.)
+paper/*
+paper/**/*
+!paper/pldiws26lctesmain-p11-p-b372538494-176281_176283M-final.pdf
