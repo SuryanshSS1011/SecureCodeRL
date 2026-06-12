@@ -30,6 +30,7 @@ preferred-citation:
   publisher:
     name: "ACM"
   doi: "10.1145/3814943.3816167"
+  url: "https://dl.acm.org/doi/10.1145/3814943.3816167"
   isbn: "979-8-4007-2721-4"
   start: 1
   end: 5

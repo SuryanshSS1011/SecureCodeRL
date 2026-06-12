@@ -2,7 +2,7 @@
 
 **Scheduled Partial-Credit RL for Reliable Code Generation with Small Language Models**
 
-LCTES '26 (WIP)
+LCTES '26 (WIP) — [ACM DL](https://dl.acm.org/doi/10.1145/3814943.3816167) · [DOI: 10.1145/3814943.3816167](https://doi.org/10.1145/3814943.3816167)
 
 This repository contains the source code, training pipeline, and evaluation
 scripts that accompany the LCTES '26 WIP paper. The camera-ready PDF is at
@@ -43,6 +43,7 @@ If you use this work, cite the paper:
   address   = {Boulder, CO, USA},
   pages     = {1--5},
   doi       = {10.1145/3814943.3816167},
+  url       = {https://dl.acm.org/doi/10.1145/3814943.3816167},
   isbn      = {979-8-4007-2721-4},
   note      = {Work in progress.}
 }
